@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Simple Stopwatch</title>
+<style>
+  body{font-family:sans-serif;display:grid;place-items:center;height:100vh;background:#f7f7f7}
+  .box{background:#fff;padding:20px;border-radius:10px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+  #time{font-size:36px;margin-bottom:12px;letter-spacing:2px}
+  button{margin:4px;padding:8px 12px;border-radius:6px;border:0;cursor:pointer}
+  .start{background:#28a745;color:#fff} .stop{background:#dc3545;color:#fff} .reset{background:#6c757d;color:#fff}
+</style>
+</head>
+<body>
+  <div class="box">
+    <div id="time">00:00:00</div>
+    <div>
+      <button id="start" class="start">Start</button>
+      <button id="stop" class="stop">Stop</button>
+      <button id="reset" class="reset">Reset</button>
+    </div>
+  </div>
+
+<script>
+let elapsed = 0, timer = null; // elapsed in ms
+const display = id => document.getElementById(id);
+const fmt = ms => {
+  const cs = Math.floor(ms/10)%100; // centiseconds (2 digits)
+  const sec = Math.floor(ms/1000)%60;
+  const min = Math.floor(ms/60000);
+  return String(min).padStart(2,'0')+ ':' + String(sec).padStart(2,'0') + ':' + String(cs).padStart(2,'0');
+};
+
+display('start').onclick = () => {
+  if (timer) return;
+  const t0 = Date.now();
+  timer = setInterval(()=> {
+    elapsed += Date.now() - (window._last || t0);
+    window._last = Date.now();
+    display('time').textContent = fmt(elapsed);
+  }, 10);
+  window._last = Date.now();
+};
+
+display('stop').onclick = () => {
+  if (!timer) return;
+  clearInterval(timer);
+  timer = null;
+  window._last = null;
+};
+
+display('reset').onclick = () => {
+  clearInterval(timer);
+  timer = null;
+  window._last = null;
+  elapsed = 0;
+  display('time').textContent = '00:00:00';
+};
+</script>
+</body>
+</html>
